@@ -51,9 +51,9 @@ PARSER = rparser()
 
 def parse(text):
     def walk(l):
-        ## ['log', [['cropland', '+', 1]]]
-        ## ['poly', [['log', [['cropland', '+', 1]]], 3], 3]
-        ## [[['factor', ['unSub'], 21], ':', ['poly', [['log', [['cropland', '+', 1]]], 3], 3], ':', ['poly', [['log', [['hpd', '+', 1]]], 3], 2]]]
+        # ['log', [['cropland', '+', 1]]]
+        # ['poly', [['log', [['cropland', '+', 1]]], 3], 3]
+        # [[['factor', ['unSub'], 21], ':', ['poly', [['log', [['cropland', '+', 1]]], 3], 3], ':', ['poly', [['log', [['hpd', '+', 1]]], 3], 2]]]
         if type(l) in (int, float):
             return l
         if isinstance(l, str):
@@ -126,15 +126,16 @@ def parse(text):
             args = walk(l[1])
             return Node(Operator("inv_logit"), [args])
 
-        ## Only binary operators left
+        # Only binary operators left
         if len(l) == 1:
-            import pdb; pdb.set_trace()
+            import pdb
+            pdb.set_trace()
             pass
         assert len(l) % 2 == 1, "unexpected number of arguments for binary operator"
         assert len(l) != 1, "unexpected number of arguments for binary operator"
-        ## FIXME: this only works for associative operators.  Need to either
-        ## special-case division or include an attribute that specifies
-        ## whether the op is associative.
+        # FIXME: this only works for associative operators.  Need to either
+        # special-case division or include an attribute that specifies
+        # whether the op is associative.
         left = walk(l.pop(0))
         op = l.pop(0)
         right = walk(l)
@@ -144,10 +145,10 @@ def parse(text):
             return Node(Operator(op), (left,) + right.args)
         return Node(Operator(op), (left, right))
 
-    ### FIXME: hack
+    # FIXME: hack
     if not isinstance(text, str):
         text = str(text)
-    new_text = re.sub("newrange = c\((\d), (\d+)\)", "\\1, \\2", text)
+    new_text = re.sub(r"newrange = c\((\d), (\d+)\)", "\\1, \\2", text)
     new_text = new_text.replace("rescale(", "scale(")
     nodes = PARSER.parseString(new_text, parseAll=True)
     tree = walk(nodes)

@@ -1,17 +1,15 @@
-import collections
 import re
 
 import rpy2.robjects as robjects
 import rpy2.rinterface as rinterface
-import rpy2.robjects.packages
-
-robjects.packages.importr("Matrix")
-robjects.packages.importr("lme4")
 
 from . import reval
 from .ri2pi import ri2pi
 from . import rparser
 from .tree import Node, Operator
+
+robjects.packages.importr("Matrix")
+robjects.packages.importr("lme4")
 
 
 class MerMod(robjects.methods.RS4):
@@ -40,7 +38,7 @@ class MerMod(robjects.methods.RS4):
     def terms(self):
         """Return a list of predictor variables in the model equation."""
         fm = self.call_method("terms")
-        formula = re.sub("\s+", " ", fm.r_repr())
+        formula = re.sub(r"\s+", " ", fm.r_repr())
         lhs, rhs = formula.split("~")
         lhs = lhs
         prods = [x.strip() for x in rhs.split("+")]
@@ -51,8 +49,8 @@ class MerMod(robjects.methods.RS4):
         return ri2pi(self.slots["frame"])
 
     def _polys(self):
-        ## Need to get raw frame, i.e. not translated by ri2pi, so that we
-        ## can get the coefficients for each poly().
+        # Need to get raw frame, i.e. not translated by ri2pi, so that we
+        # can get the coefficients for each poly().
         raw_frame = self.slots["frame"]
 
         def find_norm2_alpha(node):
@@ -130,9 +128,9 @@ class MerMod(robjects.methods.RS4):
         """Return a tree that represents the model equation."""
 
         def parse(text, regexp):
-            ## Quote string that consit of a term name + factor/categorical
-            ## value so the parser doesn't get confused.  The tree walker in
-            ## the parser will automatically remove the quotes.
+            # Quote string that consit of a term name + factor/categorical
+            # value so the parser doesn't get confused.  The tree walker in
+            # the parser will automatically remove the quotes.
             new_text = regexp.sub(lambda x: '"' + x.group(0) + '"', text)
             nodes = rparser.parse(new_text)
             return nodes
@@ -144,7 +142,7 @@ class MerMod(robjects.methods.RS4):
                 Node(Operator("*"), (parse(x[0], regexp), x[1]))
                 for x in self.fixef().itertuples()
             ]
-            ## FIXME: Add inverse link function?
+            # FIXME: Add inverse link function?
             root = Node(Operator("+"), prods)
             self._equation = reval.make_inputs(root)
             self._cse()
@@ -186,7 +184,7 @@ class MerMod(robjects.methods.RS4):
     def _output(self):
         """Return the response variables in the model equation."""
         fm = self.call_method("formula")
-        formula = re.sub("\s+", " ", fm.r_repr())
+        formula = re.sub(r"\s+", " ", fm.r_repr())
         lhs, _ = formula.split("~")
         return lhs.strip()
 

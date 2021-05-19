@@ -1,18 +1,14 @@
 import collections
-import importlib
-import inspect
 import numpy as np
 import pandas as pd
-import string
 
-from . import poly
 from .tree import Node, Operator
 
 Context = collections.namedtuple("Context", "context index")
 
 
-def to_list(l):
-    return "[" + ", ".join(map(str, l)) + "]"
+def to_list(arg):
+    return "[" + ", ".join(map(str, arg)) + "]"
 
 
 def to_rexpr(root):
@@ -134,9 +130,15 @@ def to_repr(root):
 
 
 def to_expr(root, ctx=None):
-    recurse = lambda x: to_expr(x, ctx)
-    guvec = lambda: ctx is not None and ctx.context == "guvec"
-    jit = lambda: ctx is not None and ctx.context == "jit"
+    def recurse(x):
+        return to_expr(x, ctx)
+
+    def guvec():
+        return ctx is not None and ctx.context == "guvec"
+
+    def jit():
+        return ctx is not None and ctx.context == "jit"
+
     if isinstance(root, str):
         return root
     if isinstance(root, int):
@@ -290,7 +292,6 @@ def find_input_types(root):
 
 
 def find_nonvector(root):
-    letters = list(string.ascii_lowercase)
     nonvector = (Operator("poly"),)
     nodes = collections.OrderedDict()
 
@@ -315,10 +316,10 @@ def find_nonvector(root):
         return node
 
     root.transform(replace)
-    ## Walk the tree again to verify are no non-vectorizable nodes left
+    # Walk the tree again to verify are no non-vectorizable nodes left
     for node in root.walk():
         if isinstance(node, Node):
-            assert not node.type in nonvector, "non-vectorizable operator left"
+            assert node.type not in nonvector, "non-vectorizable operator left"
     return nodes
 
 
@@ -390,9 +391,9 @@ import numpy as np
 import numpy.ma as ma
 import r2py.poly as poly
 """
-    ## *****
-    ## NOTE: This operation modifies the expression tree.
-    ## *****
+    # *****
+    # NOTE: This operation modifies the expression tree.
+    # *****
     io_types = find_input_types(root)
     ios = sorted(io_types.keys())
     nonvector = find_nonvector(root)

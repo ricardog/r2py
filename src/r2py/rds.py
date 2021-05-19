@@ -1,8 +1,5 @@
 import rpy2.robjects as robjects
-import rpy2.rinterface as rinterface
-from rpy2.rinterface import baseenv
 from rpy2.rinterface import SexpS4
-from rpy2.rinterface import StrSexpVector
 from rpy2.robjects import default_converter
 from rpy2.robjects import pandas2ri
 from rpy2.robjects.conversion import Converter
@@ -24,11 +21,9 @@ def ri2ro_s4(obj):
 
 def read(path):
     pandas2ri.activate()
-    rpath = StrSexpVector((path,))
-    readrds = baseenv["readRDS"]
     my_converter = Converter("lme4-aware converter", template=default_converter)
     my_converter.ri2ro.register(SexpS4, ri2ro_s4)
-    with localconverter(my_converter) as cv:
+    with localconverter(my_converter):
         obj = robjects.r("readRDS('%s')" % path)
     if isinstance(obj, lmermod.LMerMod) or isinstance(obj, glmermod.GLMerMod):
         return obj

@@ -34,8 +34,8 @@ class Model(object):
     def output_range(self):
         return self._out_range
 
-    ## FIXME: This function is PREDICTS specific and should move to out of
-    ## this package.
+    # FIXME: This function is PREDICTS specific and should move to out of
+    # this package.
     @property
     def intercept(self):
         ins = map(

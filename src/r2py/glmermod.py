@@ -13,6 +13,6 @@ class GLMerMod(mermod.MerMod):
     def call_method(self, what):
         try:
             super(GLMerMod, self).call_method(what)
-        except AttributeError as e:
+        except AttributeError:
             method = getattr(self.pkg, what + "_" + lmermod.LMerMod.__rname__)
         return method(self)

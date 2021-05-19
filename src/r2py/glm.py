@@ -1,4 +1,3 @@
-import collections
 import functools
 import re
 import rpy2.robjects as robjects
@@ -167,6 +166,6 @@ class GLM:
     def output(self):
         """Return the response variables in the model equation."""
         fm = self.formula()
-        formula = re.sub("\s+", " ", fm.r_repr())
+        formula = re.sub(r"\s+", " ", fm.r_repr())
         lhs, _ = formula.split("~")
         return lhs.strip()

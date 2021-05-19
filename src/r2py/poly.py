@@ -2,19 +2,16 @@ from numba import jit, vectorize
 import numpy as np
 import pandas as pd
 import re
-import tempfile
 
-from .tree import Node
 
-RE = re.compile("poly\(([^,]+),\s*(\d+)\)$")
-TERM_RE = re.compile("(" + RE.pattern.replace("$", "") + ")(\d+)")
+RE = re.compile(r"poly\(([^,]+),\s*(\d+)\)$")
+TERM_RE = re.compile(r"(" + RE.pattern.replace("$", "") + r")(\d+)")
 
 
 def poly_parse(node):
     m = re.match(TERM_RE, node)
     if m is None:
         raise ValueError("not a poly term '%s'" % node)
-    term = m.group(1)
     var = m.group(2)
     power = int(m.group(3))
     degree = int(m.group(4))
@@ -44,7 +41,7 @@ def ortho_poly_fit(x, degree=1):
     n = degree + 1
     x = np.asarray(x).flatten()
     if degree >= len(np.unique(x)):
-        stop("'degree' must be less than number of unique points")
+        ValueError("'degree' must be less than number of unique points")
     xbar = np.mean(x)
     x = x - xbar
     X = np.fliplr(np.vander(x, n))

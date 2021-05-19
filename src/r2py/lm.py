@@ -30,12 +30,17 @@ class LM(object):
 
     def fit(self):
         """Fit the linear model and extract the coefficients.
-        FIXME: This function assumes the model has a single predictor variable (x), but may appear multiple times with different exponents.  That is, the equation must be of the form
 
-            y ~ x + I(x^2) + I(x^3)"""
+        FIXME: This function assumes the model has a single predictor
+        variable (x), but may appear multiple times with different
+        exponents.  That is, the equation must be of the form
+
+            y ~ x + I(x^2) + I(x^3)
+
+        """
         if self.formula is None or self.response is None or self.predictors is None:
             raise RuntimeError("set formula, response, and predictor variables")
-        ## FIXME: This is a quick and dirty hack.
+        # FIXME: This is a quick and dirty hack.
         self.env["y"] = self.response
         self.env["x"] = self.predictors.loc[:, "x"]
         fit = self.__stats.lm(self.formula)
@@ -43,6 +48,6 @@ class LM(object):
 
     @property
     def coefs(self):
-        if self._coefs == None:
+        if self._coefs is None:
             self.fit()
         return self._coefs

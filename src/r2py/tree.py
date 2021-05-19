@@ -1,5 +1,4 @@
 import functools
-import itertools
 import sys
 
 
@@ -35,8 +34,8 @@ class Node(object):
         return h
 
     def walk(self):
-        ## NOTE: Various bits of code depend on this function doing
-        ## post-order traversal.
+        # NOTE: Various bits of code depend on this function doing
+        # post-order traversal.
         for child in self.args:
             if isinstance(child, Node):
                 for c in child.walk():
@@ -50,7 +49,7 @@ class Node(object):
         # visiting children.o
         try:
             newnode = f(self)
-        except StopIteration as e:
+        except StopIteration:
             # Skip processing this node's children
             return self
         if newnode is None or not isinstance(newnode, Node):

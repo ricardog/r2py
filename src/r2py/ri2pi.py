@@ -36,8 +36,8 @@ def ri2pi(obj):
         raise RuntimeError
     elif klass == robjects.vectors.FactorVector:
         values = map(lambda v: 0 if v[1] == obj.NAvalue else v[1], obj.items())
-        res = pandas.Categorical.from_codes(
-            numpy.asarray(tuple(values)) - 1,
+        res = pd.Categorical.from_codes(
+            np.asarray(tuple(values)) - 1,
             categories=obj.do_slot("levels"),
             ordered="ordered" in obj.rclass,
         )
@@ -50,9 +50,9 @@ def ri2pi(obj):
     elif klass == robjects.vectors.DataFrame:
         standard = True
         try:
-            # res = pandas2ri.ri2py(obj)
+            # res = pd.ri2py(obj)
             standard = False
-        except ValueError as e:
+        except ValueError:
             standard = False
         if not standard:
             res = pd.DataFrame()
