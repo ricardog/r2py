@@ -67,11 +67,11 @@ def rparser():
 PARSER = rparser()
 
 
-def parse(text):
+def parse(text):                # noqa C901
     def walk(node):
         # ['log', [['cropland', '+', 1]]]
         # ['poly', [['log', [['cropland', '+', 1]]], 3], 3]
-        # [[['factor', ['unSub'], 21], ':', ['poly', [['log', [['cropland', '+', 1]]], 3], 3], ':', ['poly', [['log', [['hpd', '+', 1]]], 3], 2]]]
+        # [[['factor', ['unSub'], 21], ':', ['poly', [['log', [['cropland', '+', 1]]], 3], 3], ':', ['poly', [['log', [['hpd', '+', 1]]], 3], 2]]] # noqa E501
         if type(node) in (int, float):
             return node
         if isinstance(node, str):

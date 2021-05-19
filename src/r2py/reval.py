@@ -11,7 +11,7 @@ def to_list(arg):
     return "[" + ", ".join(map(str, arg)) + "]"
 
 
-def to_rexpr(root):
+def to_rexpr(root):             # noqa C901
     if isinstance(root, str):
         return root
     if isinstance(root, int):
@@ -49,7 +49,7 @@ def to_rexpr(root):
     raise ValueError("unexpected node type: %s" % repr(root.type))
 
 
-def to_repr(root):
+def to_repr(root):              # noqa C901
     if isinstance(root, str):
         return root
     if isinstance(root, int):
@@ -129,15 +129,10 @@ def to_repr(root):
     raise ValueError("unexpected node type: %s" % repr(root.type))
 
 
-def to_expr(root, ctx=None):
-    def recurse(x):
-        return to_expr(x, ctx)
-
-    def guvec():
-        return ctx is not None and ctx.context == "guvec"
-
-    def jit():
-        return ctx is not None and ctx.context == "jit"
+def to_expr(root, ctx=None):                            # noqa C901
+    recurse = lambda x: to_expr(x, ctx)                      # noqa E731
+    guvec = lambda: ctx is not None and ctx.context == "guvec" # noqa E731
+    jit = lambda: ctx is not None and ctx.context == "jit"     # noqa E731
 
     if isinstance(root, str):
         return root

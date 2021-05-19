@@ -8,7 +8,7 @@ import rpy2.rinterface as rinterface
 from rpy2.robjects import pandas2ri
 
 
-def ri2pi(obj):
+def ri2pi(obj):                 # noqa C901
     if obj is None:
         return None
     klass = type(obj)
