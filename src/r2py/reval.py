@@ -342,7 +342,7 @@ def to_py(root, fname):
     prelude = """
 import numpy as np
 import numpy.ma as ma
-import projections.r2py.poly as poly
+import r2py.poly as poly
 """
     expr = "return " + to_expr(root)
     iodecls = ["%s" % v for v in sorted(set(inputs))]
@@ -361,7 +361,7 @@ def to_pyx(root, fname):
     inputs = find_inputs(root)
     prelude = """
 cimport cython
-import projections.r2py.poly as poly
+import r2py.poly as poly
 cimport numpy as np
 import numpy.ma as ma
 DTYPE = np.float
@@ -384,16 +384,12 @@ def rreplace(src, what, repl, num=1):
 
 def to_numba(root, fname, out_name, child=False, orange=None):
     inputs = find_inputs(root)
-    poly_src = inspect.getsource(poly.ortho_poly_predict)
     impts = """
 from numba import jit, guvectorize, float32, int64
 import numpy as np
 import numpy.ma as ma
-import projections.r2py.poly as poly
-{poly}
-""".format(
-        poly=poly_src
-    )
+import r2py.poly as poly
+"""
     ## *****
     ## NOTE: This operation modifies the expression tree.
     ## *****
