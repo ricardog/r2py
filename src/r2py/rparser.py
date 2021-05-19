@@ -1,9 +1,25 @@
-from pyparsing import *
+from pyparsing import (
+    alphanums,
+    alphas,
+    dblQuotedString,
+    delimitedList,
+    Forward,
+    Group,
+    infixNotation,
+    Literal,
+    oneOf,
+    opAssoc,
+    Optional,
+    ParserElement,
+    ParseResults,
+    pyparsing_common,
+    Word,
+)
 import re
 
-ParserElement.enablePackrat()
-
 from .tree import Node, Operator
+
+ParserElement.enablePackrat()
 
 
 def rparser():
@@ -11,10 +27,12 @@ def rparser():
 
     lparen = Literal("(").suppress()
     rparen = Literal(")").suppress()
-    double = Word(nums + ".").setParseAction(lambda t: float(t[0]))
+    # double = Word(nums + ".").setParseAction(lambda t: float(t[0]))
     integer = pyparsing_common.signed_integer
     number = pyparsing_common.number
-    ident = Word(initChars=alphas + "_", bodyChars=alphanums + "_" + ".")
+    ident = Word(
+        initChars=alphas + "_", bodyChars=alphanums + "_" + "."
+    )
     string = dblQuotedString
     funccall = Group(
         ident
@@ -50,95 +68,129 @@ PARSER = rparser()
 
 
 def parse(text):
-    def walk(l):
+    def walk(node):
         # ['log', [['cropland', '+', 1]]]
         # ['poly', [['log', [['cropland', '+', 1]]], 3], 3]
         # [[['factor', ['unSub'], 21], ':', ['poly', [['log', [['cropland', '+', 1]]], 3], 3], ':', ['poly', [['log', [['hpd', '+', 1]]], 3], 2]]]
-        if type(l) in (int, float):
-            return l
-        if isinstance(l, str):
-            if l == "Intercept" or l == '"Intercept"':
+        if type(node) in (int, float):
+            return node
+        if isinstance(node, str):
+            if node == "Intercept" or node == '"Intercept"':
                 return 1
-            elif l[0] == '"' and l[-1] == '"':
-                return l[1:-1]
+            elif node[0] == '"' and node[-1] == '"':
+                return node[1:-1]
             else:
-                return l
-        if len(l) == 1 and type(l[0]) in (int, str, float, ParseResults):
-            return walk(l[0])
-        if l[0] == "factor":
-            assert len(l) == 3, "unexpected number of arguments to factor"
-            assert len(l[1]) == 1, "argument to factor is an expression"
-            assert type(l[2]) == int, "second argument to factor is not an int"
+                return node
+        if len(node) == 1 and type(node[0]) in (int, str, float, ParseResults):
+            return walk(node[0])
+        if node[0] == "factor":
+            assert (
+                len(node) == 3
+            ), "unexpected number of arguments to factor"
+            assert len(node[1]) == 1, "argument to factor is an expression"
+            assert (
+                type(node[2]) == int
+            ), "second argument to factor is not an int"
             return Node(
-                Operator("=="), (Node(Operator("in"), (l[1][0], "float32[:]")), l[2])
+                Operator("=="),
+                (Node(Operator("in"), (node[1][0], "float32[:]")), node[2]),
             )
-        if l[0] == "poly":
-            assert len(l) in (2, 3), "unexpected number of arguments to poly"
-            assert isinstance(l[1][1], int), "degree argument to poly is not an int"
-            inner = walk(l[1][0])
-            degree = l[1][1]
-            if len(l) == 2:
+        if node[0] == "poly":
+            assert len(node) in (
+                2,
+                3,
+            ), "unexpected number of arguments to poly"
+            assert isinstance(
+                node[1][1], int
+            ), "degree argument to poly is not an int"
+            inner = walk(node[1][0])
+            degree = node[1][1]
+            if len(node) == 2:
                 pwr = 1
             else:
-                assert type(l[2]) == int, "power argument to poly is not an int"
-                pwr = l[2]
-            return Node(Operator("sel"), (Node(Operator("poly"), (inner, degree)), pwr))
-        if l[0] == "log":
-            assert len(l) == 2, "unexpected number of arguments to log"
-            args = walk(l[1])
+                assert (
+                    type(node[2]) == int
+                ), "power argument to poly is not an int"
+                pwr = node[2]
+            return Node(
+                Operator("sel"),
+                (Node(Operator("poly"), (inner, degree)), pwr),
+            )
+        if node[0] == "log":
+            assert len(node) == 2, "unexpected number of arguments to log"
+            args = walk(node[1])
             return Node(Operator("log"), [args])
-        if l[0] == "scale":
-            assert len(l[1]) in (3, 5), "unexpected number of arguments to scale"
-            args = walk(l[1][0])
-            return Node(Operator("scale"), [args] + l[1][1:])
-        if l[0] == "I":
-            assert len(l) == 2, "unexpected number of arguments to I"
-            args = walk(l[1])
+        if node[0] == "scale":
+            assert len(node[1]) in (
+                3,
+                5,
+            ), "unexpected number of arguments to scale"
+            args = walk(node[1][0])
+            return Node(Operator("scale"), [args] + node[1][1:])
+        if node[0] == "I":
+            assert len(node) == 2, "unexpected number of arguments to I"
+            args = walk(node[1])
             return Node(Operator("I"), [args])
         # Only used for testing
-        if l[0] in ("sin", "tan"):
-            assert len(l) == 2, "unexpected number of arguments to %s" % l[0]
-            args = walk(l[1])
-            return Node(Operator(l[0]), [args])
-        if l[0] in ("max", "min", "pow"):
-            assert len(l) == 2, "unexpected number of arguments to %s" % l[0]
-            assert len(l[1]) == 2, "unexpected number of arguments to %s" % l[0]
-            left = walk(l[1][0])
-            right = walk(l[1][1])
-            return Node(Operator(l[0]), (left, right))
-        if l[0] == "exp":
-            assert len(l) == 2, "unexpected number of arguments to exp"
-            args = walk(l[1])
+        if node[0] in ("sin", "tan"):
+            assert len(node) == 2, (
+                "unexpected number of arguments to %s" % node[0]
+            )
+            args = walk(node[1])
+            return Node(Operator(node[0]), [args])
+        if node[0] in ("max", "min", "pow"):
+            assert len(node) == 2, (
+                "unexpected number of arguments to %s" % node[0]
+            )
+            assert len(node[1]) == 2, (
+                "unexpected number of arguments to %s" % node[0]
+            )
+            left = walk(node[1][0])
+            right = walk(node[1][1])
+            return Node(Operator(node[0]), (left, right))
+        if node[0] == "exp":
+            assert len(node) == 2, "unexpected number of arguments to exp"
+            args = walk(node[1])
             return Node(Operator("exp"), [args])
-        if l[0] == "sqrt":
-            assert len(l) == 2, "unexpected number of arguments to sqrt"
-            args = walk(l[1])
+        if node[0] == "sqrt":
+            assert len(node) == 2, "unexpected number of arguments to sqrt"
+            args = walk(node[1])
             return Node(Operator("sqrt"), [args])
-        if l[0] == "clip":
-            assert len(l) == 2, "unexpected number of arguments to %s" % l[0]
-            assert len(l[1]) == 3, "unexpected number of arguments to %s" % l[0]
-            left = walk(l[1][0])
-            low = walk(l[1][1])
-            high = walk(l[1][2])
-            return Node(Operator(l[0]), (left, low, high))
-        if l[0] == "inv_logit":
-            assert len(l) == 2, "unexpected number of arguments to inv_logit"
-            args = walk(l[1])
+        if node[0] == "clip":
+            assert len(node) == 2, (
+                "unexpected number of arguments to %s" % node[0]
+            )
+            assert len(node[1]) == 3, (
+                "unexpected number of arguments to %s" % node[0]
+            )
+            left = walk(node[1][0])
+            low = walk(node[1][1])
+            high = walk(node[1][2])
+            return Node(Operator(node[0]), (left, low, high))
+        if node[0] == "inv_logit":
+            assert (
+                len(node) == 2
+            ), "unexpected number of arguments to inv_logit"
+            args = walk(node[1])
             return Node(Operator("inv_logit"), [args])
 
         # Only binary operators left
-        if len(l) == 1:
+        if len(node) == 1:
             import pdb
             pdb.set_trace()
             pass
-        assert len(l) % 2 == 1, "unexpected number of arguments for binary operator"
-        assert len(l) != 1, "unexpected number of arguments for binary operator"
+        assert (
+            len(node) % 2 == 1
+        ), "unexpected number of arguments for binary operator"
+        assert (
+            len(node) != 1
+        ), "unexpected number of arguments for binary operator"
         # FIXME: this only works for associative operators.  Need to either
         # special-case division or include an attribute that specifies
         # whether the op is associative.
-        left = walk(l.pop(0))
-        op = l.pop(0)
-        right = walk(l)
+        left = walk(node.pop(0))
+        op = node.pop(0)
+        right = walk(node)
         if type(right) != Node:
             return Node(Operator(op), (left, right))
         elif right.type.type == op:
