@@ -7,8 +7,6 @@ import rpy2.robjects as robjects
 import rpy2.rinterface as rinterface
 from rpy2.robjects import pandas2ri
 
-import pdb
-
 
 def ri2pi(obj):
     if obj is None:
