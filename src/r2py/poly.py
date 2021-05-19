@@ -1,4 +1,3 @@
-from joblib import memory
 from numba import jit, vectorize
 import numpy as np
 import pandas as pd
@@ -9,11 +8,6 @@ from .tree import Node
 
 RE = re.compile("poly\(([^,]+),\s*(\d+)\)$")
 TERM_RE = re.compile("(" + RE.pattern.replace("$", "") + ")(\d+)")
-
-# Cache on disk (but available via mmap) the results of the orthogonal
-# polynomials.
-# memcache = memory.Memory(cachedir=tempfile.mkdtemp(prefix='poly-cache'),
-#                         verbose=1, mmap_mode='r')
 
 
 def poly_parse(node):
