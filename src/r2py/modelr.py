@@ -118,10 +118,10 @@ def load(path):
 def _compile(fname):
     import rpy2.robjects as robjects
 
-    from ..r2py import glm
-    from ..r2py import lmermod
-    from ..r2py import glmermod
-    from ..r2py import pythonify
+    from r2py import glm
+    from r2py import lmermod
+    from r2py import glmermod
+    from r2py import pythonify
 
     def doit(obj):
         if "lmerMod" in obj.rclass:
