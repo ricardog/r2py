@@ -2,14 +2,15 @@ import re
 
 import rpy2.robjects as robjects
 import rpy2.rinterface as rinterface
+import rpy2.robjects.packages
+
+robjects.packages.importr("Matrix")
+robjects.packages.importr("lme4")
 
 from . import reval
 from .ri2pi import ri2pi
 from . import rparser
 from .tree import Node, Operator
-
-robjects.packages.importr("Matrix")
-robjects.packages.importr("lme4")
 
 
 class MerMod(robjects.methods.RS4):
