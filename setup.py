@@ -27,8 +27,10 @@ setup(
     install_requires=[
         'Click',
         'asciitree',
+        'inflection',
         'numba',
         'pandas',
+        'pyparsing',
         'rpy2',
         'setuptools',
     ],
