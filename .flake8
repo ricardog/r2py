@@ -1,0 +1,2 @@
+[flake8]
+exclude = .git, tests/test1.py, tests/test2.py

@@ -4,6 +4,7 @@ requires = [
 	 "wheel"
 ]
 build-backend = "setuptools.build_meta"
+
 [tool.black]
 line-length = 72
 target-version = ['py37']
