@@ -11,7 +11,7 @@ setup(
     description="Compile mixed-effects R models to python modules",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    python_requires='>=3.8.3',
+    python_requires='>=3.7',
     url="https://github.com/ricardog/r2py",
     project_urls={
         "Bug Tracker": "https://github.com/ricardog/r2py/issues",
