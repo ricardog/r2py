@@ -6,6 +6,6 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.black]
-line-length = 72
+line-length = 88
 target-version = ['py37']
 include = '\.pyi?$'
