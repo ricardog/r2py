@@ -33,6 +33,7 @@ setup(
         'rpy2',
         'setuptools',
     ],
+    extras_require={"dev": ["black", "flake8", "pylint", "pytest"]},
     entry_points='''
         [console_scripts]
         r2py=r2py.scripts.r2py:main
