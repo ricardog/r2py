@@ -19,7 +19,7 @@ class Model(object):
         return self._name
 
     @property
-    def syms(self):
+    def inputs(self):
         return self._inputs
 
     @property
