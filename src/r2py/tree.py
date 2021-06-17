@@ -85,6 +85,9 @@ class Operator(object):
         self.operators[type] = self
         self.type = type
 
+    def __getnewargs__(self):
+        return (self.type, )
+
     def __repr__(self):
         return "%s" % (self.type)
 
