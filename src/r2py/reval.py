@@ -36,8 +36,12 @@ def to_rexpr(root):             # noqa C901
         return "poly(%s, %d)" % (to_rexpr(root.args[0]), root.args[1])
     if root.type is Operator("log"):
         return "log(%s)" % to_rexpr(root.args[0])
+    if root.type is Operator("log1p"):
+        return "log1p(%s)" % to_rexpr(root.args[0])
     if root.type is Operator("exp"):
         return "exp(%s)" % to_rexpr(root.args[0])
+    if root.type is Operator("expm1"):
+        return "expm1(%s)" % to_rexpr(root.args[0])
     if root.type is Operator("sqrt"):
         return "sqrt(%s)" % to_rexpr(root.args[0])
     if root.type is Operator("scale"):
@@ -88,8 +92,12 @@ def to_repr(root):              # noqa C901
         return "poly.ortho_poly_fit(%s, %d)" % (to_repr(root.args[0]), root.args[1])
     if root.type is Operator("log"):
         return "(log(%s))" % to_repr(root.args[0])
+    if root.type is Operator("log1p"):
+        return "(log1p(%s))" % to_repr(root.args[0])
     if root.type is Operator("exp"):
         return "(exp(%s))" % to_repr(root.args[0])
+    if root.type is Operator("expm1"):
+        return "(expm1(%s))" % to_repr(root.args[0])
     if root.type is Operator("sqrt"):
         return "(sqrt(%s))" % to_rexpr(root.args[0])
     if root.type is Operator("scale"):
@@ -199,8 +207,12 @@ def to_expr(root, ctx=None):                            # noqa C901
         return "poly.ortho_poly_fit(%s, %d)" % (recurse(root.args[0]), root.args[1])
     if root.type is Operator("log"):
         return "(ma.log(%s))" % recurse(root.args[0])
+    if root.type is Operator("log1p"):
+        return "(ma.log1p(%s))" % recurse(root.args[0])
     if root.type is Operator("exp"):
         return "(ma.exp(%s))" % recurse(root.args[0])
+    if root.type is Operator("expm1"):
+        return "(ma.expm1(%s))" % recurse(root.args[0])
     if root.type is Operator("sqrt"):
         return "(ma.sqrt(%s))" % recurse(root.args[0])
     if root.type is Operator("scale"):
