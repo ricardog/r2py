@@ -108,7 +108,7 @@ def to_repr(root):              # noqa C901
                 root.args[2],
             )
         if len(root.args) == 5:
-            return "(scale(%s, %d, %d, %f, %f))" % (
+            return "(scale(%s, %f, %f, %f, %f))" % (
                 to_repr(root.args[0]),
                 root.args[1],
                 root.args[2],
@@ -217,13 +217,13 @@ def to_expr(root, ctx=None):                            # noqa C901
         return "(ma.sqrt(%s))" % recurse(root.args[0])
     if root.type is Operator("scale"):
         if len(root.args) == 3:
-            return "(poly.scale(%s, %d, %d))" % (
+            return "(poly.scale(%s, %f, %f))" % (
                 recurse(root.args[0]),
                 root.args[1],
                 root.args[2],
             )
         if len(root.args) == 5:
-            return "(poly.scale(%s, %d, %d, %f, %f))" % (
+            return "(poly.scale(%s, %f, %f, %f, %f))" % (
                 recurse(root.args[0]),
                 root.args[1],
                 root.args[2],
