@@ -34,6 +34,11 @@ def test_exp():
     return
 
 
+def test_sqrt():
+    _ = parse("sqrt(a)")
+    return
+
+
 def test_expm1():
     _ = parse("expm1(a)")
     return
@@ -61,7 +66,8 @@ def test_clip():
 
 def test_scale():
     # Same as plotrix::rescale in R
-    _ = parse("scale(a, 0, 1)")
+    _ = parse("scale(a, 0, 1)")            # Set min, max of output range
+    _ = parse("scale(a, 0, 1, 3, 10)")     # Also set max, min of input range
     return
 
 

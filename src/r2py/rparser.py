@@ -83,6 +83,17 @@ def parse(text):                # noqa C901
                 return node
         if len(node) == 1 and type(node[0]) in (int, str, float, ParseResults):
             return walk(node[0])
+        if node[0] == "I":
+            assert len(node) == 2, "unexpected number of arguments to I"
+            args = walk(node[1])
+            return Node(Operator("I"), [args])
+        if node[0] in ("log", "log1p", "exp", "expm1", "sqrt", "inv_logit",
+                       "sin", "cos", "tan"):
+            assert len(node) == 2,(
+                f"unexpected number of arguments to {node[0]}"
+            )
+            args = walk(node[1])
+            return Node(Operator(node[0]), [args])
         if node[0] == "factor":
             assert (
                 len(node) == 3
@@ -116,14 +127,6 @@ def parse(text):                # noqa C901
                 Operator("sel"),
                 (Node(Operator("poly"), (inner, degree)), pwr),
             )
-        if node[0] == "log":
-            assert len(node) == 2, "unexpected number of arguments to log"
-            args = walk(node[1])
-            return Node(Operator("log"), [args])
-        if node[0] == "log1p":
-            assert len(node) == 2, "unexpected number of arguments to log"
-            args = walk(node[1])
-            return Node(Operator("log1p"), [args])
         if node[0] == "scale":
             assert len(node[1]) in (
                 3,
@@ -131,17 +134,7 @@ def parse(text):                # noqa C901
             ), "unexpected number of arguments to scale"
             args = walk(node[1][0])
             return Node(Operator("scale"), [args] + node[1][1:])
-        if node[0] == "I":
-            assert len(node) == 2, "unexpected number of arguments to I"
-            args = walk(node[1])
-            return Node(Operator("I"), [args])
         # Only used for testing
-        if node[0] in ("sin", "cos", "tan"):
-            assert len(node) == 2, (
-                "unexpected number of arguments to %s" % node[0]
-            )
-            args = walk(node[1])
-            return Node(Operator(node[0]), [args])
         if node[0] in ("max", "min", "pow"):
             assert len(node) == 2, (
                 "unexpected number of arguments to %s" % node[0]
@@ -152,18 +145,6 @@ def parse(text):                # noqa C901
             left = walk(node[1][0])
             right = walk(node[1][1])
             return Node(Operator(node[0]), (left, right))
-        if node[0] == "exp":
-            assert len(node) == 2, "unexpected number of arguments to exp"
-            args = walk(node[1])
-            return Node(Operator("exp"), [args])
-        if node[0] == "expm1":
-            assert len(node) == 2, "unexpected number of arguments to exp"
-            args = walk(node[1])
-            return Node(Operator("expm1"), [args])
-        if node[0] == "sqrt":
-            assert len(node) == 2, "unexpected number of arguments to sqrt"
-            args = walk(node[1])
-            return Node(Operator("sqrt"), [args])
         if node[0] == "clip":
             assert len(node) == 2, (
                 "unexpected number of arguments to %s" % node[0]
@@ -175,12 +156,6 @@ def parse(text):                # noqa C901
             low = walk(node[1][1])
             high = walk(node[1][2])
             return Node(Operator(node[0]), (left, low, high))
-        if node[0] == "inv_logit":
-            assert (
-                len(node) == 2
-            ), "unexpected number of arguments to inv_logit"
-            args = walk(node[1])
-            return Node(Operator("inv_logit"), [args])
 
         # Only binary operators left
         if len(node) == 1:
