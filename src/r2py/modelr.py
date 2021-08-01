@@ -120,12 +120,15 @@ def _compile(fname):
 
     from r2py import glm
     from r2py import lmermod
+    from r2py import lmermodlmertest
     from r2py import glmermod
     from r2py import pythonify
 
     def doit(obj):
         if "lmerMod" in obj.rclass:
             mod = lmermod.LMerMod(obj)
+        elif "lmerModLmerTest" in obj.rclass:
+            mod = lmermodlmertest.LMerModLmerTest(obj)
         elif "glmerMod" in obj.rclass:
             mod = glmermod.GLMerMod(obj)
         elif "glm" in obj.rclass or "lm" in obj.rclass:
