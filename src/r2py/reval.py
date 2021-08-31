@@ -208,7 +208,7 @@ def to_expr(root, ctx=None):                            # noqa C901
     if root.type is Operator("log"):
         return "(ma.log(%s))" % recurse(root.args[0])
     if root.type is Operator("log1p"):
-        return "(ma.log1p(%s))" % recurse(root.args[0])
+        return "(np.log1p(%s))" % recurse(root.args[0])
     if root.type is Operator("exp"):
         return "(ma.exp(%s))" % recurse(root.args[0])
     if root.type is Operator("expm1"):
