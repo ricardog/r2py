@@ -430,6 +430,7 @@ def {fname}({iodecls}):
         stmts = ["%s = %s" % (name, lsyms[name]) for name in lsyms.keys()]
         expr = to_expr(root, Context("jit", "idx"))
         nb_types = ", ".join([io_types[x][0] for x in sorted(io_types)])
+        vectors = [k for k, v in io_types.items() if v == ("float32", )]
         if orange is None:
             orange = (-np.inf, np.inf)
         assert isinstance(orange, tuple) and len(orange) == 2
@@ -446,7 +447,7 @@ def {fname}({iodecls}):
             nb_types=nb_types,
             fname=fname,
             iodecls=", ".join(ios),
-            first_in=inputs[0],
+            first_in=vectors[0],
             stmts="\n    ".join(stmts),
             expr=expr,
         )
